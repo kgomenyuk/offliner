@@ -1,4 +1,4 @@
-interface User{
+export interface User{
 
     gender: string;
     max_age: Int16Array;

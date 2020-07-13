@@ -10,6 +10,7 @@ import {User} from "../recomendation_system/main";
 import { json } from "body-parser";
 
 
+
 /**
  * GET /api
  * List of API examples.
@@ -23,8 +24,8 @@ export const getApi = (req: Request, res: Response) => {
 export const getUsercategory = async (req: Request, res: Response)=>{
     const app = express();
     const pgconfig = app.get("pgdb");
-    // const request  = JSON.parse(req);
-    console.log(req);
+    // const request  = JSON.parse(req.toString());
+    // console.log(request);
     res.json({
         query:{gender:"", agemin:0, agemax:0},
         result:[]
