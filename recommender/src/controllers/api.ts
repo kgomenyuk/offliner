@@ -19,8 +19,8 @@ export const getApi = (req: Request, res: Response) => {
 };
 
 export const getUsercategory = async (req: Request, res: Response)=>{
-
-    const pgconfig = express.application.get("pgdb");
+    const app = express();
+    const pgconfig = app.get("pgdb");
     
     res.json({
         query:{gender:"", agemin:0, agemax:0},
