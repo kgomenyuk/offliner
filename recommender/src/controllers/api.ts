@@ -6,6 +6,8 @@ import { UserDocument } from "../models/User";
 import express from "express";
 import request from "request";
 import postgres from "ts-postgres";
+import {User} from "../recomendation_system/main";
+import { json } from "body-parser";
 
 
 /**
@@ -21,7 +23,8 @@ export const getApi = (req: Request, res: Response) => {
 export const getUsercategory = async (req: Request, res: Response)=>{
     const app = express();
     const pgconfig = app.get("pgdb");
-    
+    // const request  = JSON.parse(req);
+    console.log(req);
     res.json({
         query:{gender:"", agemin:0, agemax:0},
         result:[]
