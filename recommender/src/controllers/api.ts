@@ -6,7 +6,8 @@ import { UserDocument } from "../models/User";
 import express from "express";
 import request from "request";
 import postgres from "ts-postgres";
-import {User, createRecomendation} from "../recomendation_system/main";
+import {createRecomendation} from "../recomendation_system/main";
+import {Client} from "../recomendation_system/Client";
 import { json } from "body-parser";
 
 
