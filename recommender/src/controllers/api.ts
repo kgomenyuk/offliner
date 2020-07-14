@@ -6,9 +6,8 @@ import { UserDocument } from "../models/User";
 import express from "express";
 import request from "request";
 import postgres from "ts-postgres";
-import {User} from "../recomendation_system/main";
+import {User, createRecomendation} from "../recomendation_system/main";
 import { json } from "body-parser";
-
 
 
 /**
@@ -24,8 +23,15 @@ export const getApi = (req: Request, res: Response) => {
 export const getUsercategory = async (req: Request, res: Response)=>{
     const app = express();
     const pgconfig = app.get("pgdb");
-    // const request  = JSON.parse(req.toString());
-    // console.log(request);
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    const recommended_goods = createRecomendation(
+                 {
+            gender: req.params.gender,
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            max_age: Number(req.params.agemin),
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            min_age: Number(req.params.agemax)
+        });
     res.json({
         query:{gender:"", agemin:0, agemax:0},
         result:[]
