@@ -1,16 +1,20 @@
-from django.shortcuts import render, redirect
-from .forms import ImageForm
+from django.shortcuts import render
+from django.http import JsonResponse
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+import os
+from django.conf import settings
 
 
-def index(request):
-    if request.method == 'POST':
-        form = ImageForm(request.POST, files=request.FILES or None)
+class ImageAPI(APIView):
+    def get(self, request):
+        file = request.FILES['photo']
+        return JsonResponse({'Status': 'Error', 'Detail': 'Use POST', 'File name': str(file)})
 
-        if form.is_valid():
-            image = form.save(commit=False)
-            image.save()
-            return redirect('index')
-        return render(request, 'index.html', {'form': form})
-    form = ImageForm(files=request.FILES or None)
-    return render(request, 'index.html', {'form': form})
-# Create your views here.
+    def post(self, request):
+        file = request.FILES['photo']
+        path = default_storage.save(str(file), ContentFile(file.read()))
+        tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+        return JsonResponse({'Status': 'success', 'Image name': str(file)})
