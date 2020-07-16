@@ -26,18 +26,26 @@ export const getUsercategory = async (req: Request, res: Response)=>{
     const pgconfig = app.get("pgdb");
     // eslint-disable-next-line @typescript-eslint/camelcase
     const factory = new RecAlgoFactory();
-    const algo = factory.getAlgo()
-    const recommended_goods = (
-                 {
-            gender: req.params.gender,
-            // eslint-disable-next-line @typescript-eslint/camelcase
-            maxAge: Number(req.params.agemin),
-            // eslint-disable-next-line @typescript-eslint/camelcase
-            minAge: Number(req.params.agemax)
-        });
+
+    // объект с параметрами рекомендательного метода
+    const pClient = {
+        gender: req.params.gender,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        maxAge: Number(req.params.agemin),
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        minAge: Number(req.params.agemax)
+    };
+    // подобрать алгоритм рекомендаций
+    const algo = factory.getAlgo(pClient);
+    algo.dbConfig = pgconfig;
+    // задать параметры клиента, для которого надо подготовить рекомедованные товары
+    algo.init(pClient);
+    // сформировать список рекомендованных позиций меню
+    const recommended = await algo.getRecomendation();
+    
     res.json({
-        query:{gender:"", agemin:0, agemax:0},
-        result:[]
+        query:{client: pClient},
+        result:recommended
     });
 };
 
