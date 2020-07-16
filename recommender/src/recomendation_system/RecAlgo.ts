@@ -2,7 +2,8 @@ import { Client } from "./Client";
 import { RecResult } from "./RecResult";
 
 export class RecAlgo{
-
+    //конфигурация подключения к базе данных
+    public dbConfig: any;
 
     mClient: Client;
 
@@ -14,18 +15,38 @@ export class RecAlgo{
     }
     
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    getRecomendation(): Array<RecResult>{
+    async getRecomendation(): Promise<Array<RecResult>>{
 
         let arrResult = [];
         if(this.mClient != null){
-            arrResult = this.run(this.mClient);
+            arrResult = await this.run(this.mClient);
         }
         
         return arrResult;
     }
-    run(client: Client): Array<RecResult> {
+    // реализуйте этот метод в своем классе
+    // основной мето алгоритма
+    async run(client: Client): Promise<Array<RecResult>> {
         return [];
     }
+    // расчет расстояния евклида
+    eucidianDistance (a: any[], b: any[], dimensions: number) {
+        if (a.length !== b.length) { return null }
+        let sum: number = 0
+        for (let i = 0; i < dimensions; i++) {
+            sum += Math.pow(a[i] - b[i], 2)
+        }
+        return Math.sqrt(sum)
+    }
 
-
+    // расчет расстояния хэмминга
+    hammingDistance (a: any[], b: any[]) {
+        if (a.length !== b.length) { return null }
+        let d: number = 0
+        let i: number = a.length
+        while (i--) {
+            if (a[i] !== b[i]) { d++ }
+        }
+        return d
+    }
 }

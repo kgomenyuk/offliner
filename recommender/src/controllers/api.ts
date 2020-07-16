@@ -6,9 +6,9 @@ import { UserDocument } from "../models/User";
 import express from "express";
 import request from "request";
 import postgres from "ts-postgres";
-import {createRecomendation} from "../recomendation_system/main";
 import {Client} from "../recomendation_system/Client";
 import { json } from "body-parser";
+import { RecAlgoFactory } from "../recomendation_system/RecAlgoFactory";
 
 
 /**
@@ -25,13 +25,15 @@ export const getUsercategory = async (req: Request, res: Response)=>{
     const app = express();
     const pgconfig = app.get("pgdb");
     // eslint-disable-next-line @typescript-eslint/camelcase
-    const recommended_goods = createRecomendation(
+    const factory = new RecAlgoFactory();
+    const algo = factory.getAlgo()
+    const recommended_goods = (
                  {
             gender: req.params.gender,
             // eslint-disable-next-line @typescript-eslint/camelcase
-            max_age: Number(req.params.agemin),
+            maxAge: Number(req.params.agemin),
             // eslint-disable-next-line @typescript-eslint/camelcase
-            min_age: Number(req.params.agemax)
+            minAge: Number(req.params.agemax)
         });
     res.json({
         query:{gender:"", agemin:0, agemax:0},

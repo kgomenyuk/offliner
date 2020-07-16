@@ -3,7 +3,7 @@ import { RecResult } from "./RecResult";
 import { Client } from "./Client";
 
 export class RecPop extends RecAlgo{
-    run(client: Client): Array<RecResult> {
+    async run(client: Client): Promise<Array<RecResult>>{
         return [];
     }
 

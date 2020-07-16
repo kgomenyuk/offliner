@@ -1,5 +1,6 @@
 export class RecResult{
-    productId: string;
-    place: number;
+    public productId: string;
+    //рейтинг
+    public place: number;
 
 }
