@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Launch Program",
-            "program": "${workspaceFolder}/src/app.ts",
+            "program": "${workspaceFolder}/src/server.ts",
             "request": "launch",
             "skipFiles": [
                 "<node_internals>/**"
@@ -15,7 +15,7 @@
             "sourceMaps": true,
             "trace": true,
             "outFiles": [
-                "${workspaceFolder}/build/**/*.js"
+                "${workspaceFolder}/dist/**/*.js"
             ]
         },
         {

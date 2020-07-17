@@ -22,8 +22,8 @@ export const getApi = (req: Request, res: Response) => {
 };
 
 export const getUsercategory = async (req: Request, res: Response)=>{
-    const app = express();
-    const pgconfig = app.get("pgdb");
+    // считывыаем параметры подключения из текущего приложения (app)
+    const pgconfig = req.app.get("pgdb");
     // eslint-disable-next-line @typescript-eslint/camelcase
     const factory = new RecAlgoFactory();
 
@@ -31,9 +31,9 @@ export const getUsercategory = async (req: Request, res: Response)=>{
     const pClient = {
         gender: req.params.gender,
         // eslint-disable-next-line @typescript-eslint/camelcase
-        maxAge: Number(req.params.agemin),
+        maxAge: Number(req.params.agemax),
         // eslint-disable-next-line @typescript-eslint/camelcase
-        minAge: Number(req.params.agemax)
+        minAge: Number(req.params.agemin)
     };
     // подобрать алгоритм рекомендаций
     const algo = factory.getAlgo(pClient);
@@ -42,7 +42,7 @@ export const getUsercategory = async (req: Request, res: Response)=>{
     algo.init(pClient);
     // сформировать список рекомендованных позиций меню
     const recommended = await algo.getRecomendation();
-    
+
     res.json({
         query:{client: pClient},
         result:recommended
