@@ -8,6 +8,7 @@ import os
 from django.conf import settings
 from age_gender.detect import age_gender_detection
 
+
 class ImageAPI(APIView):
     def get(self, request):
         try:
@@ -24,12 +25,18 @@ class ImageAPI(APIView):
             file = request.FILES['photo']
             path = default_storage.save(str(file), ContentFile(file.read()))
             tmp_file = os.path.join(settings.MEDIA_ROOT, path)
-            min_age, max_age, gender = age_gender_detection(tmp_file)
+            detection = age_gender_detection(tmp_file)
+            faces = []
+            for face in detection:
+                faces.append({
+                    'min_age': face[0],
+                    'max_age': face[1],
+                    'gender': face[2]
+                })
+            os.remove(tmp_file)
             return JsonResponse({
                 'status': 'success',
-                'min_age': min_age,
-                'max_age': max_age,
-                'gender': gender
+                'faces': faces
             })
         except (KeyError, OSError) as e:
             return JsonResponse({'Status': 'Error', 'Detail': 'KeyError or wrong file'})
