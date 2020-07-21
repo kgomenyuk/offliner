@@ -6,14 +6,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import os
 from django.conf import settings
-
-
-def age_gender_detection(file_path):  # временная заглушка
-    min_age = 0
-    max_age = 100
-    gender = 'Male'
-    return min_age, max_age, gender
-
+from age_gender.detect import age_gender_detection
 
 class ImageAPI(APIView):
     def get(self, request):
