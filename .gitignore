@@ -105,3 +105,6 @@ dist
 
 # idea files
 .idea
+
+# vscode
+.vscode
