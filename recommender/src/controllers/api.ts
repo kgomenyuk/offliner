@@ -26,7 +26,10 @@ export const getUsercategory = async (req: Request, res: Response)=>{
     const pgconfig = req.app.get("pgdb");
     // eslint-disable-next-line @typescript-eslint/camelcase
     const factory = new RecAlgoFactory();
-
+    // получаем нынешнее время
+    let curDate: Date = new Date();
+    // получаем часы
+    let curHours = curDate.getHours();
     // объект с параметрами рекомендательного метода
     const pClient = {
         gender: req.params.gender,
