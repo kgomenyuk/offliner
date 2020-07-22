@@ -15,9 +15,10 @@ Including another URLconf
 """
 # from django.contrib import admin
 from django.urls import path
-from FaceRecognition.views import ImageAPI
+from FaceRecognition.views import AgeGenderAPI, DetectAPI
 
 urlpatterns = [
     #    path('admin/', admin.site.urls),
-    path("api", ImageAPI.as_view()),
+    path("age-gender", AgeGenderAPI.as_view()),
+    path("detect", DetectAPI.as_view())
 ]

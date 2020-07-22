@@ -9,7 +9,7 @@ from django.conf import settings
 from age_gender.detect import age_gender_detection
 
 
-class ImageAPI(APIView):
+class AgeGenderAPI(APIView):
     def get(self, request):
         try:
             file = request.FILES['photo']
@@ -18,7 +18,7 @@ class ImageAPI(APIView):
                 'detail': 'Use POST',
                 'file_name': str(file)})
         except (KeyError, OSError) as e:
-            return JsonResponse({'Status': 'Error', 'Detail': 'KeyError of wrong file'})
+            return JsonResponse({'status': 'Error', 'detail': 'KeyError of wrong file'})
 
     def post(self, request):
         try:
@@ -39,4 +39,12 @@ class ImageAPI(APIView):
                 'faces': faces
             })
         except (KeyError, OSError) as e:
-            return JsonResponse({'Status': 'Error', 'Detail': 'KeyError or wrong file'})
+            return JsonResponse({'status': 'error', 'detail': 'KeyError or wrong file'})
+
+
+class DetectAPI(APIView):
+    def get(self, request):
+        return JsonResponse({'status': 'error', 'Detail': 'Not implemented'})
+
+    def post(self, request):
+        return JsonResponse({'status': 'error', 'Detail': 'Not implemented'})
