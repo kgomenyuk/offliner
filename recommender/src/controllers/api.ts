@@ -36,7 +36,9 @@ export const getUsercategory = async (req: Request, res: Response)=>{
         // eslint-disable-next-line @typescript-eslint/camelcase
         maxAge: Number(req.params.agemax),
         // eslint-disable-next-line @typescript-eslint/camelcase
-        minAge: Number(req.params.agemin)
+        minAge: Number(req.params.agemin),
+        
+        timeHours: curHours
     };
     // подобрать алгоритм рекомендаций
     const algo = factory.getAlgo(pClient);
