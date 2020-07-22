@@ -9,7 +9,7 @@ export class RecPop extends RecAlgo{
         const db = new postgresClient(this.dbConfig);
         await db.connect();
         try {
-            const sql = {""}
+            const sql = "";
             const resultIterator = db.query(sql, [client.timeHours]);
             
             for await (const row of resultIterator) {
