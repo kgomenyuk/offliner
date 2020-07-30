@@ -7,44 +7,49 @@ from django.core.files.base import ContentFile
 import os
 from django.conf import settings
 from age_gender.detect import age_gender_detection
+from FaceRecognition.classes import AgeGenderResponse, DetectResponse
+import time
 
 
 class AgeGenderAPI(APIView):
     def get(self, request):
-        try:
-            file = request.FILES['photo']
-            return JsonResponse({
-                'status': 'Error',
-                'detail': 'Use POST',
-                'file_name': str(file)})
-        except (KeyError, OSError) as e:
-            return JsonResponse({'status': 'Error', 'detail': 'KeyError of wrong file'})
+        json_response = AgeGenderResponse()
+        json_response.status = 'error'
+        json_response.detail = 'Use POST'
+        return JsonResponse(json_response.json())
 
     def post(self, request):
+        start_time = time.time()
+        tmp_file = ''
         try:
             file = request.FILES['photo']
             path = default_storage.save(str(file), ContentFile(file.read()))
             tmp_file = os.path.join(settings.MEDIA_ROOT, path)
             detection = age_gender_detection(tmp_file)
-            faces = []
-            for face in detection:
-                faces.append({
-                    'min_age': face[0],
-                    'max_age': face[1],
-                    'gender': face[2]
-                })
+            json_response = AgeGenderResponse()
+            json_response.status = 'success'
+            json_response.faces = detection
             os.remove(tmp_file)
-            return JsonResponse({
-                'status': 'success',
-                'faces': faces
-            })
-        except (KeyError, OSError) as e:
-            return JsonResponse({'status': 'error', 'detail': 'KeyError or wrong file'})
+            print('AgeGender prediction time: {:.2f} s.'.format(time.time() - start_time))
+            return JsonResponse(json_response.json())
+        except (KeyError, OSError, AttributeError) as e:
+            if tmp_file != '':
+                os.remove(tmp_file)
+            json_response = AgeGenderResponse()
+            json_response.status = 'error'
+            json_response.detail = 'KeyError, wrong file, attribute error'
+            return JsonResponse(json_response.json())
 
 
 class DetectAPI(APIView):
     def get(self, request):
-        return JsonResponse({'status': 'error', 'Detail': 'Not implemented'})
+        json_response = DetectResponse()
+        json_response.status = 'error'
+        json_response.detail = 'Not implemented'
+        return JsonResponse(json_response.json())
 
     def post(self, request):
-        return JsonResponse({'status': 'error', 'Detail': 'Not implemented'})
+        json_response = DetectResponse()
+        json_response.status = 'error'
+        json_response.detail = 'Not implemented'
+        return JsonResponse(json_response.json())

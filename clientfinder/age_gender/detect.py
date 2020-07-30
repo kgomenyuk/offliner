@@ -2,6 +2,7 @@ import os
 import cv2
 import math
 from django.conf import settings
+from FaceRecognition.classes import Face
 
 path_wrapper = os.path.join(settings.BASE_DIR, 'age_gender')
 
@@ -48,8 +49,11 @@ def age_gender_detection(file_path):
         ageNet.setInput(blob)
         agePreds = ageNet.forward()
         age = ageList[agePreds[0].argmax()]
-
-        result.append([int(age[1:-1].split('-')[0]), int(age[1:-1].split('-')[1]), gender])
+        face = Face()
+        face.min_age = int(age[1:-1].split('-')[0])
+        face.max_age = int(age[1:-1].split('-')[1])
+        face.gender = gender
+        result.append(face)
 
     return result
 
