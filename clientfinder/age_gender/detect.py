@@ -3,11 +3,12 @@ import cv2
 import math
 from django.conf import settings
 from FaceRecognition.classes import Face
+from PIL import Image
 
 path_wrapper = os.path.join(settings.BASE_DIR, 'age_gender')
 
 
-def age_gender_detection(file_path):
+def age_gender_detection(file_path, width_coeff=1, height_coeff=1, horizontal_offset=0, vertical_offset=0):
     faceProto = os.path.join(path_wrapper, 'opencv_face_detector.pbtxt')
     faceModel = os.path.join(path_wrapper, 'opencv_face_detector_uint8.pb')
     ageProto = os.path.join(path_wrapper, 'age_deploy.prototxt')
@@ -23,7 +24,8 @@ def age_gender_detection(file_path):
     ageNet = cv2.dnn.readNet(ageModel, ageProto)
     genderNet = cv2.dnn.readNet(genderModel, genderProto)
 
-    video = cv2.VideoCapture(file_path)
+    cropImage(file_path, width_coeff, height_coeff, horizontal_offset, vertical_offset)
+    video = cv2.VideoCapture(os.path.join(path_wrapper, 'croped.jpg'))
     cv2.VideoCapture()
     padding = 20
 
@@ -76,3 +78,10 @@ def highlightFace(net, frame, conf_threshold=0.7):
             y2 = int(detections[0, 0, i, 6] * frameHeight)
             faceBoxes.append([x1, y1, x2, y2])
     return faceBoxes
+
+def cropImage(file_path, width_coeff, height_coeff, horizontal_offset, vertical_offset):
+    img = Image.open(file_path)
+    width, height = img.size
+    img.crop(((width * (1 - width_coeff)) // 2 + horizontal_offset, (height * (1 - height_coeff)) // 2 - vertical_offset, (width * (1 + width_coeff)) // 2 + horizontal_offset, (height * (1 + height_coeff)) // 2 - vertical_offset)).save(os.path.join(path_wrapper, 'croped.jpg'))
+
+#cropImage(os.path.join(path_wrapper, 'test2.jpeg'), 0.25, 0.33, 50, 50)
