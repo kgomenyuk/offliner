@@ -11,19 +11,21 @@ export class RecClientCatWithTime extends RecAlgo{
         const startDinner = 17;
         await db.connect();
         try {
-            let ingestion: string;
-            if (client.timeHours.getHours() >= startLunch || client.timeHours.getHours() <= startDinner){
-                ingestion = "forlunch"
+            // let ingestion: string;
+            // if (client.timeHours.getHours() >= startLunch || client.timeHours.getHours() <= startDinner){
+            //     ingestion = "forlunch";
             }
-            else if (client.timeHours.getHours() >= startDinner){
-                ingestion = "fordinner"
-            }
-            else{
-                ingestion = "forbreakfast"
-            }
+            // else if (client.timeHours.getHours() >= startDinner){
+            //     ingestion = "fordinner";
+            // }
+            // else{
+            //     ingestion = "forbreakfast";
+            // }
             let sql: string;
-            sql = `SELECT position_id::text, (row_number() OVER(ORDER BY agemin-$2::int asc, count(*) DESC))::int as place 
+            sql = `SELECT position_id::text, (row_number() OVER(ORDER BY agemin-$2::int asc, count(*) DESC))::int as place,
+            forbreakfast::int, forlunch::int, fordinner::int
             FROM contents WHERE gender = $1::text AND agemin BETWEEN $2::int AND $3::text = 1
+            AND $4 = ${forbreakfast} AND $5 = ${forlunch} AND $6 = ${fordinner}
             group by position_id, agemin
             ORDER BY place asc
             limit 20`;
