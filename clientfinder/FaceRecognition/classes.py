@@ -8,16 +8,16 @@ class Face:
 
 
 class Response:
+    status = ''
+    detail = ''
+
     def json(self):
         return jsons.dump(self)
 
 
 class AgeGenderResponse(Response):
-    status = ''
-    detail = ''
     faces = []
 
 
 class DetectResponse(Response):
-    status = ''
-    detail = ''
+    pass

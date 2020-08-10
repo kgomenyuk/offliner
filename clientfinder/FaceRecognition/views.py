@@ -30,14 +30,20 @@ class AgeGenderAPI(APIView):
             json_response.status = 'success'
             json_response.faces = detection
             os.remove(tmp_file)
-            print('AgeGender prediction time: {:.2f} s.'.format(time.time() - start_time))
+            # logging
+            detection_time = (time.time() - start_time)
+            with open('logs/age_gender.log', 'a') as log:
+                log.write(
+                    time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + ' '
+                    + str(file) + ' {:.2f} s.\n'.format(detection_time)
+                )
             return JsonResponse(json_response.json())
         except (KeyError, OSError, AttributeError) as e:
             if tmp_file != '':
                 os.remove(tmp_file)
             json_response = AgeGenderResponse()
             json_response.status = 'error'
-            json_response.detail = 'KeyError, wrong file, attribute error'
+            json_response.detail = str(e)
             return JsonResponse(json_response.json())
 
 

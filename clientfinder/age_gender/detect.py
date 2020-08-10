@@ -79,9 +79,13 @@ def highlightFace(net, frame, conf_threshold=0.7):
             faceBoxes.append([x1, y1, x2, y2])
     return faceBoxes
 
+
 def cropImage(file_path, width_coeff, height_coeff, horizontal_offset, vertical_offset):
     img = Image.open(file_path)
     width, height = img.size
-    img.crop(((width * (1 - width_coeff)) // 2 + horizontal_offset, (height * (1 - height_coeff)) // 2 - vertical_offset, (width * (1 + width_coeff)) // 2 + horizontal_offset, (height * (1 + height_coeff)) // 2 - vertical_offset)).save(os.path.join(path_wrapper, 'croped.jpg'))
+    img.crop((
+             (width * (1 - width_coeff)) // 2 + horizontal_offset, (height * (1 - height_coeff)) // 2 - vertical_offset,
+             (width * (1 + width_coeff)) // 2 + horizontal_offset,
+             (height * (1 + height_coeff)) // 2 - vertical_offset)).save(os.path.join(path_wrapper, 'croped.jpg'))
 
-#cropImage(os.path.join(path_wrapper, 'test2.jpeg'), 0.25, 0.33, 50, 50)
+# cropImage(os.path.join(path_wrapper, 'test2.jpeg'), 0.25, 0.33, 50, 50)
