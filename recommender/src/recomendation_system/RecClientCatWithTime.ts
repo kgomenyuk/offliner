@@ -7,14 +7,13 @@ export class RecClientCatWithTime extends RecAlgo{
     async run(client: Client): Promise<Array<RecResult>> {
         const arrayResult = new Array<RecResult>();
         const db = new postgresClient(this.dbConfig);
-        const startLunch = 12;
-        const startDinner = 17;
+        // const startLunch = 12;
+        // const startDinner = 17;
         await db.connect();
         try {
             // let ingestion: string;
             // if (client.timeHours.getHours() >= startLunch || client.timeHours.getHours() <= startDinner){
             //     ingestion = "forlunch";
-            }
             // else if (client.timeHours.getHours() >= startDinner){
             //     ingestion = "fordinner";
             // }
@@ -25,12 +24,12 @@ export class RecClientCatWithTime extends RecAlgo{
             sql = `SELECT position_id::text, (row_number() OVER(ORDER BY agemin-$2::int asc, count(*) DESC))::int as place,
             forbreakfast::int, forlunch::int, fordinner::int
             FROM contents WHERE gender = $1::text AND agemin BETWEEN $2::int AND $3::text = 1
-            AND $4 = ${forbreakfast} AND $5 = ${forlunch} AND $6 = ${fordinner}
+            AND forbreakfast = $4::int AND forlunch = $5::int AND fordinner = $6::int}
             group by position_id, agemin
             ORDER BY place asc
             limit 20`;
             
-            const resultIterator = db.query(sql, [client.gender, client.minAge, client.maxAge, ingestion]);
+            const resultIterator = db.query(sql, [client.gender, client.minAge, client.maxAge, client.forBreakfast, client.forLunch, client.forDinner]);
             
             for await (const row of resultIterator) {
                 const result = new RecResult();
