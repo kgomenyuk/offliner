@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30406.217
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "OpenDrinkWebApp", "OpenDrinkWebApp\OpenDrinkWebApp.njsproj", "{5F58FC49-83D7-4C7B-A804-26F9A3A06310}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5F58FC49-83D7-4C7B-A804-26F9A3A06310}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F58FC49-83D7-4C7B-A804-26F9A3A06310}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F58FC49-83D7-4C7B-A804-26F9A3A06310}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F58FC49-83D7-4C7B-A804-26F9A3A06310}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1D15C056-3A29-446B-9DF9-5B4462F9A0AD}
+	EndGlobalSection
+EndGlobal
