@@ -2,6 +2,7 @@ import os
 import cv2
 import math
 from django.conf import settings
+import numpy
 from FaceRecognition.classes import Face
 from PIL import Image
 
@@ -21,25 +22,26 @@ def age_gender_detection(file_path, width_coeff=1, height_coeff=1, horizontal_of
     genderList = ['Male', 'Female']
 
     faceNet = cv2.dnn.readNet(faceModel, faceProto)
-    ageNet = cv2.dnn.readNet(ageModel, ageProto)
-    genderNet = cv2.dnn.readNet(genderModel, genderProto)
+    faceNet.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+    faceNet.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
-    cropImage(file_path, width_coeff, height_coeff, horizontal_offset, vertical_offset)
-    video = cv2.VideoCapture(os.path.join(path_wrapper, 'croped.jpg'))
-    cv2.VideoCapture()
+    ageNet = cv2.dnn.readNet(ageModel, ageProto)
+    ageNet.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+    ageNet.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+
+    genderNet = cv2.dnn.readNet(genderModel, genderProto)
+    genderNet.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+    genderNet.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+
+    frame = cropImage(file_path, width_coeff, height_coeff, horizontal_offset, vertical_offset)
+
     padding = 20
 
     result = []
-    # while cv2.waitKey(1) < 0:
-    hasFrame, frame = video.read()
-    # if not hasFrame:
-    #    cv2.waitKey()
-    #    break
 
     faceBoxes = highlightFace(faceNet, frame)
     if not faceBoxes:
         print("No face detected")
-
     for faceBox in faceBoxes:
         face = frame[max(0, faceBox[1] - padding):
                      min(faceBox[3] + padding, frame.shape[0] - 1), max(0, faceBox[0] - padding)
@@ -56,9 +58,7 @@ def age_gender_detection(file_path, width_coeff=1, height_coeff=1, horizontal_of
         face.max_age = int(age[1:-1].split('-')[1])
         face.gender = gender
         result.append(face)
-
     return result
-
 
 def highlightFace(net, frame, conf_threshold=0.7):
     frameOpencvDnn = frame.copy()
@@ -83,9 +83,9 @@ def highlightFace(net, frame, conf_threshold=0.7):
 def cropImage(file_path, width_coeff, height_coeff, horizontal_offset, vertical_offset):
     img = Image.open(file_path)
     width, height = img.size
-    img.crop((
-             (width * (1 - width_coeff)) // 2 + horizontal_offset, (height * (1 - height_coeff)) // 2 - vertical_offset,
+    return numpy.array(img.crop(((width * (1 - width_coeff)) // 2 + horizontal_offset,
+             (height * (1 - height_coeff)) // 2 - vertical_offset,
              (width * (1 + width_coeff)) // 2 + horizontal_offset,
-             (height * (1 + height_coeff)) // 2 - vertical_offset)).save(os.path.join(path_wrapper, 'croped.jpg'))
+             (height * (1 + height_coeff)) // 2 - vertical_offset)))
 
-# cropImage(os.path.join(path_wrapper, 'test2.jpeg'), 0.25, 0.33, 50, 50)
+#age_gender_detection(os.path.join(path_wrapper, 'test2.jpeg'), 0.25, 0.33, 50, 50)
