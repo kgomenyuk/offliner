@@ -25,8 +25,7 @@ export class RecClientCat extends RecAlgo{
         const db = new postgresClient(this.dbConfig);
         await db.connect();
         try {
-            let sql: string;
-            sql = `SELECT position_id::text, (row_number() OVER(ORDER BY agemin-$2::int asc, count(*) DESC))::int as place 
+            const sql = `SELECT position_id::text, (row_number() OVER(ORDER BY agemin-$2::int asc, count(*) DESC))::int as place 
             FROM contents WHERE gender = $1::text AND agemin BETWEEN $2::int AND $3::int
             group by position_id, agemin
             ORDER BY place asc

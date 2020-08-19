@@ -5,7 +5,5 @@ export class Client{
     public gender: string;
     public maxAge: number;
     public minAge: number;
-    public forBreakfast?: number;
-    public forLunch?: number;
-    public forDinner?: number;
+    public timeHours?: Date;
 }
