@@ -11,21 +11,21 @@ export class RecClientCatWithTime extends RecAlgo{
         const startDinner = 17;
         await db.connect();
         try {
-            let sql = `SELECT contents.position_id::int, (row_number() OVER(ORDER BY $2::int asc, count(*) DESC))::int as place
+            let sql = `SELECT contents.position_id::int, (row_number() OVER(ORDER BY agemin-$2::int asc, count(*) DESC))::int as place
             FROM contents JOIN menu ON contents.position_id = menu.position_id WHERE gender = $1::text AND agemin BETWEEN $2::int AND $3::int AND forbreakfast = 1
             group by contents.position_id, agemin
             ORDER BY place asc
             limit 20`;
 
             if (client.timeHours.getHours() >= startLunch || client.timeHours.getHours() < startDinner){
-                sql = `SELECT contents.position_id::int, (row_number() OVER(ORDER BY $2::int asc, count(*) DESC))::int as place
+                sql = `SELECT contents.position_id::int, (row_number() OVER(ORDER BY agemin-$2::int asc, count(*) DESC))::int as place
             FROM contents JOIN menu ON contents.position_id = menu.position_id WHERE gender = $1::text AND agemin BETWEEN $2::int AND $3::int AND forlunch = 1
             group by contents.position_id, agemin
             ORDER BY place asc
             limit 20`;
             }
             else (client.timeHours.getHours() >= startDinner);{
-                sql = `SELECT contents.position_id::int, (row_number() OVER(ORDER BY $2::int asc, count(*) DESC))::int as place
+                sql = `SELECT contents.position_id::int, (row_number() OVER(ORDER BY agemin-$2::int asc, count(*) DESC))::int as place
             FROM contents JOIN menu ON contents.position_id = menu.position_id WHERE gender = $1::text AND agemin BETWEEN $2::int AND $3::int AND fordinner = 1
             group by contents.position_id, agemin
             ORDER BY place asc
