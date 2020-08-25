@@ -7,29 +7,32 @@ export class RecClientCatWithTime extends RecAlgo{
     async run(client: Client): Promise<Array<RecResult>> {
         const arrayResult = new Array<RecResult>();
         const db = new postgresClient(this.dbConfig);
-        // const startLunch = 12;
-        // const startDinner = 17;
+        const startLunch = 12;
+        const startDinner = 17;
         await db.connect();
         try {
-            // let ingestion: string;
-            // if (client.timeHours.getHours() >= startLunch || client.timeHours.getHours() <= startDinner){
-            //     ingestion = "forlunch";
-            // else if (client.timeHours.getHours() >= startDinner){
-            //     ingestion = "fordinner";
-            // }
-            // else{
-            //     ingestion = "forbreakfast";
-            // }
-            let sql: string;
-            sql = `SELECT position_id::text, (row_number() OVER(ORDER BY agemin-$2::int asc, count(*) DESC))::int as place,
-            forbreakfast::int, forlunch::int, fordinner::int
-            FROM contents WHERE gender = $1::text AND agemin BETWEEN $2::int AND $3::text = 1
-            AND forbreakfast = $4::int AND forlunch = $5::int AND fordinner = $6::int}
-            group by position_id, agemin
+            let sql = `SELECT contents.position_id::int, (row_number() OVER(ORDER BY agemin-$2::int asc, count(*) DESC))::int as place
+            FROM contents JOIN menu ON contents.position_id = menu.position_id WHERE gender = $1::text AND agemin BETWEEN $2::int AND $3::int AND forbreakfast = 1
+            group by contents.position_id, agemin
             ORDER BY place asc
             limit 20`;
+
+            if (client.timeHours.getHours() >= startLunch || client.timeHours.getHours() < startDinner){
+                sql = `SELECT contents.position_id::int, (row_number() OVER(ORDER BY agemin-$2::int asc, count(*) DESC))::int as place
+            FROM contents JOIN menu ON contents.position_id = menu.position_id WHERE gender = $1::text AND agemin BETWEEN $2::int AND $3::int AND forlunch = 1
+            group by contents.position_id, agemin
+            ORDER BY place asc
+            limit 20`;
+            }
+            else (client.timeHours.getHours() >= startDinner);{
+                sql = `SELECT contents.position_id::int, (row_number() OVER(ORDER BY agemin-$2::int asc, count(*) DESC))::int as place
+            FROM contents JOIN menu ON contents.position_id = menu.position_id WHERE gender = $1::text AND agemin BETWEEN $2::int AND $3::int AND fordinner = 1
+            group by contents.position_id, agemin
+            ORDER BY place asc
+            limit 20`;
+            }
             
-            const resultIterator = db.query(sql, [client.gender, client.minAge, client.maxAge, client.forBreakfast, client.forLunch, client.forDinner]);
+            const resultIterator = db.query(sql, [client.gender, client.minAge, client.maxAge]);
             
             for await (const row of resultIterator) {
                 const result = new RecResult();
@@ -40,7 +43,7 @@ export class RecClientCatWithTime extends RecAlgo{
             }
         }
         catch(e){
-            console.log("DB error");
+            console.log(e);
         }
         await db.end();
         return arrayResult;

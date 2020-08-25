@@ -3,12 +3,12 @@
 import graph from "fbgraph";
 import { Response, Request, NextFunction } from "express";
 import { UserDocument } from "../models/User";
-import express from "express";
 import request from "request";
 import postgres from "ts-postgres";
 import {Client} from "../recomendation_system/Client";
 import { json } from "body-parser";
 import { RecAlgoFactory } from "../recomendation_system/RecAlgoFactory";
+import { timeStamp } from "console";
 
 
 /**
@@ -63,8 +63,9 @@ export const getUserCategoryWithTime = async (req: Request, res: Response)=>{
         // eslint-disable-next-line @typescript-eslint/camelcase
         minAge: Number(req.params.agemin),
         // eslint-disable-next-line @typescript-eslint/camelcase
-        timeHours: new Date(req.params.time)
-    }; 
+        timeHours: new Date(parseInt(req.params.time) * 1000)
+    };
+
     const algo = factory.getAlgo(pClient);
     algo.dbConfig = pgconfig;
     // задать параметры клиента, для которого надо подготовить рекомедованные товары
@@ -76,7 +77,7 @@ export const getUserCategoryWithTime = async (req: Request, res: Response)=>{
         query:{client: pClient},
         result:recommended
     });
-}
+};
 
 /**
  * GET /api/facebook
