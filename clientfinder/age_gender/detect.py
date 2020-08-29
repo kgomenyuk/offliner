@@ -40,6 +40,8 @@ def age_gender_detection(file_path, width_coeff=1, height_coeff=1, horizontal_of
     result = []
 
     faceBoxes = highlightFace(faceNet, frame)
+    saveVectors(file_path, faceBoxes)
+
     if not faceBoxes:
         print("No face detected")
     for faceBox in faceBoxes:
@@ -78,6 +80,15 @@ def highlightFace(net, frame, conf_threshold=0.7):
             y2 = int(detections[0, 0, i, 6] * frameHeight)
             faceBoxes.append([x1, y1, x2, y2])
     return faceBoxes
+
+def saveVectors(file_path, faceBoxes):
+    faceVectors = [numpy.array(Image.open(file_path).crop(box)) for box in faceBoxes]
+    #faceVectors = []
+    #for box in faceBoxes:
+    #    img = Image.open(file_path)
+    #    face = img.crop(box)
+    #    faceVectors.append(numpy.array(face))
+    return faceVectors
 
 
 def cropImage(file_path, width_coeff, height_coeff, horizontal_offset, vertical_offset):
