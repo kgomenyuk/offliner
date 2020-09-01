@@ -115,7 +115,7 @@ app.get("/account/unlink/:provider", passportConfig.isAuthenticated, userControl
  */
 app.get("/api", apiController.getApi);
 app.get("/api/usercategory/:gender/:agemin/:agemax", apiController.getUsercategory);
-app.get("/api/usercategory/:gender/:agemin/:agemax/:forbreakfast/forlunch/fordinner", apiController.getUserCategoryWithTime);
+app.get("/api/usercategory/:gender/:agemin/:agemax/:time", apiController.getUserCategoryWithTime);
 //app.get("/api/facebook", passportConfig.isAuthenticated, passportConfig.isAuthorized, apiController.getFacebook);
 
 /**

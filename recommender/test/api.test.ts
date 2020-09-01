@@ -5,7 +5,7 @@ import app from "../src/app";
 describe("GET /api/usercategory/f/25/27", () => {
     it("should return 200 OK", () => {
         return request(app)
-            .get("http://localhost:3000/api/usercategory/f/25/27")
+            .get("/api/usercategory/f/25/27")
             .expect(200);
     });
 });
