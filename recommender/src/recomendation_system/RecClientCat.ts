@@ -50,7 +50,7 @@ export class RecClientCat extends RecAlgo{
             }
         }
         catch(e){
-            console.log(e);
+            console.log("DB error");
         }
         await db.end();
         return arrayResult;
