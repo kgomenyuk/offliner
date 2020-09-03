@@ -24,11 +24,14 @@ export class RecClientCatWithTime extends RecAlgo{
 	        limit 20`;
  
             const resultIterator = db.query(sql, [client.gender, client.minAge, client.maxAge, new Date().getDay(), curPeriod]);
-            
+
+            let placei: number = 0;
+
             for await (const row of resultIterator) {
                 const result = new RecResult();
+                placei++;
                 result.productId = row.get("position_id") as string;
-                result.place = row.get("place") as number;
+                result.place = placei;
                 // сохраняем новый объект в массив с результатами
                 arrayResult.push(result);
             }
