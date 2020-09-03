@@ -2,9 +2,6 @@ import { RecAlgo } from "./RecAlgo";
 import { RecResult } from "./RecResult";
 import { Client } from "./Client";
 import { Client as postgresClient}  from "ts-postgres";
-import { forEach } from "async";
-import { time } from "console";
-import { cli } from "winston/lib/winston/config";
 
 export class RecClientCatWithTime extends RecAlgo{
     async run(client: Client): Promise<Array<RecResult>> {
