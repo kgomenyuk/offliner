@@ -9,8 +9,7 @@ export class RecAlgoFactory{
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     public getAlgo(client: Client): RecAlgo{
         let result: RecAlgo;
-        if(client.gender != null || client.minAge > 0 || client.maxAge > 0 || client.timeHours){
-            
+        if (client.gender != null && client.minAge > 0 && client.maxAge > 0 && client.timeHours != null) {
             result = new RecClientCatWithTime();
         }
         else if(client.gender != null || client.minAge > 0 || client.maxAge > 0){
