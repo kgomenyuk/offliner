@@ -5,6 +5,7 @@ from django.conf import settings
 import numpy
 from FaceRecognition.classes import Face
 from PIL import Image
+import db.facedb as facedb
 
 path_wrapper = os.path.join(settings.BASE_DIR, 'age_gender')
 
