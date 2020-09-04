@@ -25,16 +25,12 @@ export class RecClientCat extends RecAlgo{
         const db = new postgresClient(this.dbConfig);
         await db.connect();
         try {
-            //const sql = `SELECT position_id::text, (row_number() OVER(ORDER BY agemin-$2::int asc, count(*) DESC))::int as place 
-            //FROM contents WHERE gender = $1::text AND agemin BETWEEN $2::int AND $3::int
-            //group by position_id, agemin
-            //ORDER BY place asc
-            //limit 20`;
+            //FOR TIME TESTS:
+            //const t1 = new Date().getTime();
 
             const sql = `SELECT position_id::text, agemin::int, agemax::int, order_date::date from contents
 	        order by gender <-> $1::text, cube(agemin,agemax) <-> cube($2::int,$3::int)::cube asc, abs(order_date::date-now()::date) asc, abs(order_day_of_week::int-$4) asc
-	        limit 20`;
-            
+	        limit 1000`;
 
             const resultIterator = db.query(sql, [client.gender, client.minAge, client.maxAge, new Date().getDay()]);
 
@@ -48,6 +44,8 @@ export class RecClientCat extends RecAlgo{
                 // сохраняем новый объект в массив с результатами
                 arrayResult.push(result);
             }
+            //FOR TIME TESTS:
+            //console.log(new Date().getTime() - t1, "ms");
         }
         catch(e){
             console.log("DB error");
