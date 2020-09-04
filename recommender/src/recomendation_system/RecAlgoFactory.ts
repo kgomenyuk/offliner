@@ -2,6 +2,7 @@ import { Client } from "./Client";
 import { RecAlgo } from "./RecAlgo";
 import { RecClientCat } from "./RecClientCat";
 import { RecPop } from "./RecPop";
+import { RecClientCatWithTime } from "./RecClientCatWithTime";
 
 
 export class RecAlgoFactory{
@@ -10,7 +11,7 @@ export class RecAlgoFactory{
         let result: RecAlgo;
         if(client.gender != null || client.minAge > 0 || client.maxAge > 0 || client.timeHours){
             
-            result = new RecClientCat();
+            result = new RecClientCatWithTime();
         }
         else if(client.gender != null || client.minAge > 0 || client.maxAge > 0){
             result = new RecClientCat();

@@ -8,32 +8,48 @@ export class RecClientCatWithTime extends RecAlgo{
         const arrayResult = new Array<RecResult>();
         const db = new postgresClient(this.dbConfig);
 
-        const timeSchedule = [9, 15, 21]
-
+        const timeSchedule = [9, 15, 21];
 
         await db.connect();
         try {
-            let curPeriod: number = 0;
+            let i = 0;
+            const distances = [];
+            const curPeriod = [0, 0, 0];
             for await (const timestamp of timeSchedule) {
-                if (new Date().getHours() - timestamp < 0) { break; }
-                else { curPeriod = timestamp; }
+                const dist = Math.abs(new Date().getHours() - timeSchedule[i]);
+                i++;
+                distances.push(dist);
+            }
+            i = 0;
+            for await (const distance of distances) {
+                if (distance == Math.min(distances[0], distances[1], distances[2])) {
+                    curPeriod[i] = 1;
+                    break;
+                }
+                i++;
             }
 
-            const sql = `SELECT position_id::text, agemin::int, agemax::int, order_date::date from contents
-	        order by gender <-> $1::text, cube(agemin,agemax) <-> cube($2::int,$3::int)::cube asc, cube(extract(hour from now())) <-> cube($5), abs(order_date::date-now()::date) asc, abs(order_day_of_week::int-$4) asc
+            const queries = ["select position_id:: text from menu where forbreakfast = 1:: int", "select position_id::text from menu where forlunch = 1::int","select position_id::text from menu where fordinner = 1::int"];
+            const menuFilter = db.query(queries[i]);
+
+            const recAll = `SELECT position_id::text, agemin::int, agemax::int, order_date::date from contents
+	        order by gender <-> $1::text, cube(agemin,agemax) <-> cube($2::int,$3::int)::cube asc, abs(order_date::date-now()::date) asc, abs(order_day_of_week::int-$4) asc
 	        limit 20`;
  
-            const resultIterator = db.query(sql, [client.gender, client.minAge, client.maxAge, new Date().getDay(), curPeriod]);
+            const resultIterator = db.query(recAll, [client.gender, client.minAge, client.maxAge, new Date().getDay()]);
 
-            let placei: number = 0;
+            let placei: number = 0;            
 
             for await (const row of resultIterator) {
-                const result = new RecResult();
-                placei++;
-                result.productId = row.get("position_id") as string;
-                result.place = placei;
-                // сохраняем новый объект в массив с результатами
-                arrayResult.push(result);
+                for await (const item of menuFilter) {
+                    if (item.get("position_id") == row.get("position_id")) {
+                        const result = new RecResult();
+                        result.productId = row.get("position_id") as string;
+                        result.place = placei;
+                        arrayResult.push(result);
+                        placei++;
+                    }
+                }
             }
         }
         catch(e){
