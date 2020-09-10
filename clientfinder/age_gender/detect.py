@@ -36,7 +36,7 @@ genderNet.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 def age_gender_detection(file_path, width_coeff=1, height_coeff=1, horizontal_offset=0, vertical_offset=0):
     if (width_coeff, height_coeff, horizontal_offset, vertical_offset) != (1, 1, 0, 0):
         frame = cropImage(file_path, width_coeff, height_coeff, horizontal_offset, vertical_offset)
-     else:
+    else:
         frame = numpy.array(Image.open(file_path))
 
     padding = 20
@@ -44,7 +44,7 @@ def age_gender_detection(file_path, width_coeff=1, height_coeff=1, horizontal_of
     result = []
 
     faceBoxes = highlightFace(faceNet, frame)
-    saveVectors(file_path, faceBoxes)
+
 
     if not faceBoxes:
         print("No face detected")
@@ -66,6 +66,7 @@ def age_gender_detection(file_path, width_coeff=1, height_coeff=1, horizontal_of
         result.append(face)
     return result
 
+
 def highlightFace(net, frame, conf_threshold=0.7):
     frameOpencvDnn = frame.copy()
     frameHeight = frameOpencvDnn.shape[0]
@@ -85,10 +86,12 @@ def highlightFace(net, frame, conf_threshold=0.7):
             faceBoxes.append([x1, y1, x2, y2])
     return faceBoxes
 
-def saveVectors(file_path, faceBoxes):
+
+def saveVectors(file_path):
+    faceBoxes = highlightFace(faceNet, numpy.array(Image.open(file_path)))
     faceVectors = [numpy.array(Image.open(file_path).crop(box)) for box in faceBoxes]
-    #faceVectors = []
-    #for box in faceBoxes:
+    # faceVectors = []
+    # for box in faceBoxes:
     #    img = Image.open(file_path)
     #    face = img.crop(box)
     #    faceVectors.append(numpy.array(face))
@@ -99,8 +102,8 @@ def cropImage(file_path, width_coeff, height_coeff, horizontal_offset, vertical_
     img = Image.open(file_path)
     width, height = img.size
     return numpy.array(img.crop(((width * (1 - width_coeff)) // 2 + horizontal_offset,
-             (height * (1 - height_coeff)) // 2 - vertical_offset,
-             (width * (1 + width_coeff)) // 2 + horizontal_offset,
-             (height * (1 + height_coeff)) // 2 - vertical_offset)))
+                                 (height * (1 - height_coeff)) // 2 - vertical_offset,
+                                 (width * (1 + width_coeff)) // 2 + horizontal_offset,
+                                 (height * (1 + height_coeff)) // 2 - vertical_offset)))
 
-#age_gender_detection(os.path.join(path_wrapper, 'test2.jpeg'), 0.25, 0.33, 50, 50)
+# age_gender_detection(os.path.join(path_wrapper, 'test2.jpeg'), 0.25, 0.33, 50, 50)
