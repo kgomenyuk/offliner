@@ -9,32 +9,35 @@ import db.facedb as facedb
 
 path_wrapper = os.path.join(settings.BASE_DIR, 'age_gender')
 
+faceProto = os.path.join(path_wrapper, 'opencv_face_detector.pbtxt')
+faceModel = os.path.join(path_wrapper, 'opencv_face_detector_uint8.pb')
+ageProto = os.path.join(path_wrapper, 'age_deploy.prototxt')
+ageModel = os.path.join(path_wrapper, 'age_net.caffemodel')
+genderProto = os.path.join(path_wrapper, 'gender_deploy.prototxt')
+genderModel = os.path.join(path_wrapper, 'gender_net.caffemodel')
+
+MODEL_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
+ageList = ['(0-2)', '(4-6)', '(8-12)', '(15-20)', '(25-32)', '(38-43)', '(48-53)', '(60-100)']
+genderList = ['Male', 'Female']
+
+faceNet = cv2.dnn.readNet(faceModel, faceProto)
+faceNet.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+faceNet.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+
+ageNet = cv2.dnn.readNet(ageModel, ageProto)
+ageNet.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+ageNet.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+
+genderNet = cv2.dnn.readNet(genderModel, genderProto)
+genderNet.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+genderNet.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+
 
 def age_gender_detection(file_path, width_coeff=1, height_coeff=1, horizontal_offset=0, vertical_offset=0):
-    faceProto = os.path.join(path_wrapper, 'opencv_face_detector.pbtxt')
-    faceModel = os.path.join(path_wrapper, 'opencv_face_detector_uint8.pb')
-    ageProto = os.path.join(path_wrapper, 'age_deploy.prototxt')
-    ageModel = os.path.join(path_wrapper, 'age_net.caffemodel')
-    genderProto = os.path.join(path_wrapper, 'gender_deploy.prototxt')
-    genderModel = os.path.join(path_wrapper, 'gender_net.caffemodel')
-
-    MODEL_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
-    ageList = ['(0-2)', '(4-6)', '(8-12)', '(15-20)', '(25-32)', '(38-43)', '(48-53)', '(60-100)']
-    genderList = ['Male', 'Female']
-
-    faceNet = cv2.dnn.readNet(faceModel, faceProto)
-    faceNet.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
-    faceNet.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
-
-    ageNet = cv2.dnn.readNet(ageModel, ageProto)
-    ageNet.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
-    ageNet.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
-
-    genderNet = cv2.dnn.readNet(genderModel, genderProto)
-    genderNet.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
-    genderNet.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
-
-    frame = cropImage(file_path, width_coeff, height_coeff, horizontal_offset, vertical_offset)
+    if (width_coeff, height_coeff, horizontal_offset, vertical_offset) != (1, 1, 0, 0):
+        frame = cropImage(file_path, width_coeff, height_coeff, horizontal_offset, vertical_offset)
+     else:
+        frame = numpy.array(Image.open(file_path))
 
     padding = 20
 
