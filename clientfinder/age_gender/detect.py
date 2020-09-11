@@ -44,7 +44,6 @@ def age_gender_detection(file_path, width_coeff=1, height_coeff=1, horizontal_of
     result = []
 
     faceBoxes = highlightFace(faceNet, frame)
-    saveVectors(file_path, faceBoxes)
 
     if not faceBoxes:
         print("No face detected")
@@ -64,6 +63,10 @@ def age_gender_detection(file_path, width_coeff=1, height_coeff=1, horizontal_of
         face.max_age = int(age[1:-1].split('-')[1])
         face.gender = gender
         result.append(face)
+
+    saveVectors(file_path, faceBoxes, result)
+    #Вот тут нужен код для сохранения в бд
+    
     return result
 
 def highlightFace(net, frame, conf_threshold=0.7):
@@ -85,14 +88,19 @@ def highlightFace(net, frame, conf_threshold=0.7):
             faceBoxes.append([x1, y1, x2, y2])
     return faceBoxes
 
-def saveVectors(file_path, faceBoxes):
+def saveVectors(file_path, faceBoxes, result):
     faceVectors = [numpy.array(Image.open(file_path).crop(box)) for box in faceBoxes]
     #faceVectors = []
     #for box in faceBoxes:
     #    img = Image.open(file_path)
     #    face = img.crop(box)
     #    faceVectors.append(numpy.array(face))
-    return faceVectors
+    exportList = [(vector, (result[index].min_age, result[index].max_age, result[index].gender)) for index, vector in enumerate(faceVectors)]
+    #exportList = []
+    #for index, vector in enumerate(faceVectors):
+    #    element = (vector, (result[index].min_age, result[index].max_age, result[index].gender))
+    #    exportList.append(element)
+    return exportList
 
 
 def cropImage(file_path, width_coeff, height_coeff, horizontal_offset, vertical_offset):
