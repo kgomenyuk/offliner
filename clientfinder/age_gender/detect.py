@@ -65,8 +65,9 @@ def age_gender_detection(file_path, width_coeff=1, height_coeff=1, horizontal_of
         result.append(face)
 
     saveVectors(file_path, faceBoxes, result)
-    #Вот тут нужен код для сохранения в бд
-    
+    #SAVING TO DB
+    #r = facedb.get_db()
+    #r.insert(saveVectors(file_path, faceBoxes, result))
     return result
 
 def highlightFace(net, frame, conf_threshold=0.7):

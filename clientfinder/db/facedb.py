@@ -1,7 +1,7 @@
 import psycopg2
 import os
 import numpy as np
-
+from datetime import datetime
 
 class get_db:
     def __init__(self):
@@ -27,13 +27,18 @@ class get_db:
                                      port=self.port)
         self.cur = self.conn.cursor()
         for i in data:
-            k = self.change(i)
-            self.cur.execute(f"INSERT INTO FACEVECTORS (FACEVECTORS) VALUES ('{k}')")
+            vector = self.change(i[0])
+            minage = i[1][0]
+            maxage = i[1][1]
+            sex = i[1][2]
+            date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.cur.execute(
+                f"INSERT INTO FACEVECTORS (FACEVECTORS, agemin, agemax, sex, date) VALUES ('{vector}', '{minage}', '{maxage}', '{sex}', '{date}')")
         self.conn.commit()
-        print('Inserted')
+        print('Inserted successfully')
         self.cur.close()
         self.conn.close()
-        print('Cursor and connection Closed')
+        print('Cursor and connection closed')
 
     def get(self):
         self.conn = psycopg2.connect(database=self.name, user=self.user, password=self.password, host=self.host,
