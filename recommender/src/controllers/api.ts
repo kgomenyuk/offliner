@@ -9,6 +9,7 @@ import {Client} from "../recomendation_system/Client";
 import { json } from "body-parser";
 import { RecAlgoFactory } from "../recomendation_system/RecAlgoFactory";
 import { timeStamp } from "console";
+import { AddContent } from "../contents /AddContent";
 
 
 /**
@@ -20,6 +21,43 @@ export const getApi = (req: Request, res: Response) => {
         title: "API Examples"
     });
 };
+
+export const addContent = async (req: Request, res: Response)=>{
+    // считывыаем параметры подключения из текущего приложения (app)
+    const pgconfig = req.app.get("pgdb");
+    // eslint-disable-next-line @typescript-eslint/camelcase
+
+    // считываем клиента
+    const client = {
+        gender: req.params.gender,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        maxAge: Number(req.params.agemax),
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        minAge: Number(req.params.agemin),
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        timeHours: new Date(parseInt(req.params.time) * 1000) 
+    };
+    // добавляем клиента и формируем 'контент'
+    const content = {
+        orderId: parseInt(req.params.orderID),
+        client: client,
+        userId: parseInt(req.params.userID),
+        positionId: parseInt(req.params.positionID),
+        positionQ: parseInt(req.params.positionQ)
+    };
+    //инициализируем класс и передаем в него конфиг с подключением
+    const addContent = new AddContent();
+    addContent.dbConfig = pgconfig;
+     //инсертим наш полученный контент в базу 
+     addContent.content = content;
+    const success = await addContent.Insert();
+
+    res.json({
+        query:{content: content},
+        result:success
+    });
+};
+
 
 export const getUsercategory = async (req: Request, res: Response)=>{
     // считывыаем параметры подключения из текущего приложения (app)
