@@ -110,12 +110,6 @@ app.post("/account/password", passportConfig.isAuthenticated, userController.pos
 app.post("/account/delete", passportConfig.isAuthenticated, userController.postDeleteAccount);
 app.get("/account/unlink/:provider", passportConfig.isAuthenticated, userController.getOauthUnlink);*/
 
-/**
- * API examples routes.
- */
-app.get("/api", apiController.getApi);
-app.get("/api/usercategory/:gender/:agemin/:agemax", apiController.getUsercategory);
-app.get("/api/usercategory/:gender/:agemin/:agemax/:time", apiController.getUserCategoryWithTime);
 //app.get("/api/facebook", passportConfig.isAuthenticated, passportConfig.isAuthorized, apiController.getFacebook);
 
 /**
