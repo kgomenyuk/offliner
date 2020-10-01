@@ -8,6 +8,9 @@ import { IVerifyOptions } from "passport-local";
 import { WriteError } from "mongodb";
 import { check, sanitize, validationResult } from "express-validator";
 import "../config/passport";
+import * as password from "../util/password"
+import * as userEntity from "../entity/user"
+import {getRepository} from "typeorm"
 
 /**
  * GET /login
@@ -38,7 +41,6 @@ export const postLogin = async (req: Request, res: Response, next: NextFunction)
         req.flash("errors", errors.array());
         return res.redirect("/login");
     }
-
     passport.authenticate("local", (err: Error, user: UserDocument, info: IVerifyOptions) => {
         if (err) { return next(err); }
         if (!user) {
@@ -85,35 +87,30 @@ export const postSignup = async (req: Request, res: Response, next: NextFunction
     await check("confirmPassword", "Passwords do not match").equals(req.body.password).run(req);
     // eslint-disable-next-line @typescript-eslint/camelcase
     await sanitize("email").normalizeEmail({ gmail_remove_dots: false }).run(req);
-
+    console.log(req.body.email)
     const errors = validationResult(req);
-
+    /*
     if (!errors.isEmpty()) {
         req.flash("errors", errors.array());
         return res.redirect("/signup");
     }
-
+    */
     const user = new User({
         email: req.body.email,
         password: req.body.password
     });
-
-    User.findOne({ email: req.body.email }, (err, existingUser) => {
-        if (err) { return next(err); }
-        if (existingUser) {
-            req.flash("errors", { msg: "Account with that email address already exists." });
-            return res.redirect("/signup");
-        }
-        user.save((err) => {
-            if (err) { return next(err); }
-            req.logIn(user, (err) => {
-                if (err) {
-                    return next(err);
-                }
-                res.redirect("/");
-            });
-        });
-    });
+    let userDB = await getRepository(User).find({where: {email:req.body.email}})
+    if (userDB.length>0){
+        req.flash("errors", { msg: "Account with that email address already exists." });
+        return res.redirect("/signup");
+    }
+    let truepass = password.generateHashPassword(req.body.password)
+    let newUser = new userEntity.User()
+    newUser.email=req.body.email
+    newUser.hash=(await truepass).hash
+    newUser.salt=(await truepass).salt
+    newUser.iterations=(await truepass).iterations
+    getRepository(User).save(newUser)
 };
 
 /**
@@ -236,7 +233,59 @@ export const getReset = (req: Request, res: Response, next: NextFunction) => {
         .findOne({ passwordResetToken: req.params.token })
         .where("passwordResetExpires").gt(Date.now())
         .exec((err, user) => {
-            if (err) { return next(err); }
+            if (err) { return next(eimport * as crypto from 'crypto';
+ 
+            const PASSWORD_LENGTH = 256;
+            const SALT_LENGTH = 64;
+            const ITERATIONS = 10000;
+            const DIGEST = 'sha256';
+            const BYTE_TO_STRING_ENCODING = 'hex'; // this could be base64, for instance
+             
+            /**
+             * The information about the password that is stored in the database
+             */
+            interface PersistedPassword {
+                salt: string;
+                hash: string;
+                iterations: number;
+            }
+             
+            /**
+             * Generates a PersistedPassword given the password provided by the user. This should be called when creating a user
+             * or redefining the password
+             */
+            export async function generateHashPassword(password: string): Promise<PersistedPassword> {
+                return new Promise<PersistedPassword>((accept, reject) => {
+                    const salt = crypto.randomBytes(SALT_LENGTH).toString(BYTE_TO_STRING_ENCODING);
+                    crypto.pbkdf2(password, salt, ITERATIONS, PASSWORD_LENGTH, DIGEST, (error, hash) => {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            accept({
+                                salt,
+                                hash: hash.toString(BYTE_TO_STRING_ENCODING),
+                                iterations: ITERATIONS,
+                            });
+                        }
+                    });
+                });
+            }
+             
+            /**
+             * Verifies the attempted password against the password information saved in the database. This should be called when
+             * the user tries to log in.
+             */
+            export async function verifyPassword(persistedPassword: PersistedPassword, passwordAttempt: string): Promise<boolean> {
+                return new Promise<boolean>((accept, reject) => {
+                    crypto.pbkdf2(passwordAttempt, persistedPassword.salt, persistedPassword.iterations, PASSWORD_LENGTH, DIGEST, (error, hash) => {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            accept(persistedPassword.hash === hash.toString(BYTE_TO_STRING_ENCODING));
+                        }
+                    });
+                });
+            }rr); }
             if (!user) {
                 req.flash("errors", { msg: "Password reset token is invalid or has expired." });
                 return res.redirect("/forgot");

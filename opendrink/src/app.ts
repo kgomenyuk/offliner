@@ -11,6 +11,7 @@ import path from "path";
 import passport from "passport";
 import bluebird from "bluebird";
 import { DB_HOST, DB_NAME,DB_PWD, DB_USER, DB_PORT, ENVIRONMENT } from "./util/secrets";
+import "reflect-metadata";
 
 //const MongoStore = mongo(session);
 
@@ -93,6 +94,8 @@ app.use(
  * Primary app routes.
  */
 app.get("/", homeController.index);
+app.get("/signup", userController.getSignup);
+app.post("/signup", userController.postSignup);
 /*app.get("/login", userController.getLogin);
 app.post("/login", userController.postLogin);
 app.get("/logout", userController.logout);
@@ -119,5 +122,4 @@ app.get("/account/unlink/:provider", passportConfig.isAuthenticated, userControl
 //app.get("/auth/facebook/callback", passport.authenticate("facebook", { failureRedirect: "/login" }), (req, res) => {
 //    res.redirect(req.session.returnTo || "/");
 //});
-
 export default app;
