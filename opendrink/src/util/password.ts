@@ -1,5 +1,5 @@
 import * as crypto from "crypto";
-import { User } from "src/entity/user";
+import { User } from "../entity/user";
  
 const PASSWORD_LENGTH = 256;
 const SALT_LENGTH = 64;

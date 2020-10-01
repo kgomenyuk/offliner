@@ -71,20 +71,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //    res.locals.user = req.user;
 //    next();
 //});
-app.use((req, res, next) => {
-    // After successful login, redirect back to the intended page
-    // if (!req.user &&
-    // req.path !== "/login" &&
-    // req.path !== "/signup" &&
-    // !req.path.match(/^\/auth/) &&
-    // !req.path.match(/\./)) {
-    //     req.session.returnTo = req.path;
-    // } else if (req.user &&
-    // req.path == "/account") {
-    //     req.session.returnTo = req.path;
-    // }
-    next();
-});
+
 
 app.use(
     express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })
