@@ -7,7 +7,8 @@ from django.core.files.base import ContentFile
 import os
 from django.conf import settings
 from age_gender.detect import age_gender_detection
-from FaceRecognition.classes import AgeGenderResponse, DetectResponse
+from FaceRecognition.classes import AgeGenderResponse, DetectResponse, MarkResponse
+from db.uniqueUsers import uniqueGuests
 import time
 
 
@@ -58,4 +59,13 @@ class DetectAPI(APIView):
         json_response = DetectResponse()
         json_response.status = 'error'
         json_response.detail = 'Not implemented'
+        return JsonResponse(json_response.json())
+
+
+class MarkAPI(APIView):
+    def get(self, request):
+        start = request.GET['start']
+        end = request.GET['end']
+        json_response = uniqueGuests(start, end)
+        json_response.status = 'success'
         return JsonResponse(json_response.json())

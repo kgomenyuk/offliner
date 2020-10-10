@@ -1,12 +1,16 @@
 import psycopg2
 from datetime import datetime
-from credits import *
-
-conn = psycopg2.connect(database=name, user=user, password=password, host=host, port=port)
-cur = conn.cursor()
+import os
+from FaceRecognition.classes import MarkResponse
 
 
 def uniqueGuests(start_datetime, end_datetime):
+    conn = psycopg2.connect(database=os.environ.get('DB_NAME'),
+                            user=os.environ.get('DB_USER'),
+                            password=os.environ.get('DB_PWD'),
+                            host=os.environ.get('DB_HOST'),
+                            port=os.environ.get('DB_PORT'))
+    cur = conn.cursor()
     guests = []
     start_datetime = datetime.strptime(start_datetime, '%Y-%m-%d %H:%M:%S.%f')
     end_datetime = datetime.strptime(end_datetime, '%Y-%m-%d %H:%M:%S.%f')
@@ -16,7 +20,14 @@ def uniqueGuests(start_datetime, end_datetime):
         if guest[-1] and start_datetime <= guest[-1] <= end_datetime:
             guests.append(guest)
 
-    return guests, len(guests)
+    cur.close()
+    conn.close()
+
+    response = MarkResponse()
+    response.start = start_datetime
+    response.end = end_datetime
+    response.count = len(guests)
+    return response
 
 
-print(uniqueGuests('2020-09-11 22:33:27.000000', '2020-09-11 22:48:26.000000'))
+#print(uniqueGuests('2020-09-11 22:33:27.000000', '2020-09-11 22:48:26.000000'))

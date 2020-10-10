@@ -1,4 +1,5 @@
 import jsons
+import datetime as dt
 
 
 class Face:
@@ -21,3 +22,9 @@ class AgeGenderResponse(Response):
 
 class DetectResponse(Response):
     pass
+
+
+class MarkResponse(Response):
+    start = dt.datetime.now()
+    end = dt.datetime.now()
+    count = 0
